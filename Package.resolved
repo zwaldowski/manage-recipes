@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "html",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zwaldowski/HTML",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8f45f3fc73b3426529d9d02e18b7c92cfc355f93"
+      }
+    },
+    {
+      "identity" : "notesarchive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zwaldowski/NotesArchive",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0ced1d2e61530d29c1385e9a03b475e727fdba23"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "fee6933f37fde9a5e12a1e4aeaa93fe60116ff2a",
+        "version" : "1.2.2"
+      }
+    }
+  ],
+  "version" : 2
+}
