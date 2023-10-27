@@ -108,7 +108,7 @@ struct FreshDownloadRecipes: AsyncParsableCommand {
         }
 
         func makeAsyncIterator() -> AsyncIterator {
-            AsyncIterator(subscriptionID: subscription.id, nextWeek: subscription.nextDeliveryWeek, session: session)
+            AsyncIterator(subscriptionID: subscription.id, nextWeek: subscription.nextDeliveryWeek ?? subscription.weekWithLatestMenu, session: session)
         }
     }
 

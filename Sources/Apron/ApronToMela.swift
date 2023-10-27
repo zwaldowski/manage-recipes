@@ -36,6 +36,8 @@ struct ApronToMela: AsyncParsableCommand {
         var recipes = try [BlueApron.Recipe](jsonContentsOf: newRecipesURL)
         recipes.removeAll { oldIDs.contains($0.id) }
 
+        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+
         for input in recipes {
             var result = Mela.Recipe()
             result.title = input.mainTitle

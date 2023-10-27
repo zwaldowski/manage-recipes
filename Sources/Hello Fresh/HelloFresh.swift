@@ -18,7 +18,7 @@ enum HelloFresh {
         let cardLink: URL?
         let nutrition: [Nutrition]
         let ingredients: [Ingredient]
-        let yieldType: YieldType
+        let yieldType: YieldType?
         let yields: [Yield]
         let steps: [Step]
         let websiteURL: URL?
@@ -37,7 +37,7 @@ enum HelloFresh {
 
     struct Nutrition: Codable {
         let name: String
-        let amount: Int
+        let amount: Double
         let unit: Unit
     }
 
@@ -184,7 +184,8 @@ enum HelloFresh {
 
             struct Item: Codable, Identifiable {
                 let id: String
-                let nextDeliveryWeek: String
+                let nextDeliveryWeek: String?
+                let weekWithLatestMenu: String?
             }
         }
 
@@ -263,7 +264,7 @@ extension HelloFresh.Recipe {
         switch yieldType {
         case .omitted:
             return yields.formatted()
-        case .servings:
+        case .servings, nil:
             return "\(yields.formatted()) servings"
         }
     }

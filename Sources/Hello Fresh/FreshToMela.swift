@@ -36,6 +36,8 @@ struct FreshToMela: AsyncParsableCommand {
         var recipes = try [HelloFresh.Recipe](jsonContentsOf: newRecipesURL)
         recipes.removeAll { oldIDs.contains($0.id) }
 
+        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+
         for input in recipes {
             var result = Mela.Recipe()
             result.title = input.name
@@ -44,10 +46,11 @@ struct FreshToMela: AsyncParsableCommand {
             if let yield = input.yields.first {
                 result.yield = input.formattedYield(yield.yields)
             }
-            result.prepTime = "\(input.prepTime)"
-            if let totalTime = input.totalTime {
-                result.totalTime = "\(totalTime)"
+            // These are backwards? WTH
+            if let prepTime = input.totalTime {
+                result.prepTime = "\(prepTime)"
             }
+            result.totalTime = "\(input.prepTime)"
             if let yield = input.yields.first {
                 result.ingredients = yield.ingredients.map { ingredient in
                     [
