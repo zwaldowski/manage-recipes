@@ -1,9 +1,9 @@
 import PDFKit
 
-extension PDFDisplayBox: CaseIterable, CustomDebugStringConvertible {
-    public static let allCases = [ PDFDisplayBox.mediaBox, .cropBox, .bleedBox, .trimBox, .artBox ]
+extension PDFDisplayBox {
+    static let allCases = [ mediaBox, cropBox, bleedBox, trimBox, artBox ]
 
-    public var debugDescription: String {
+    var logDescription: String {
         switch self {
         case .mediaBox: return "media"
         case .cropBox: return "crop"

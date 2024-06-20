@@ -6,7 +6,7 @@
       "location" : "https://github.com/zwaldowski/HTML",
       "state" : {
         "branch" : "main",
-        "revision" : "8f45f3fc73b3426529d9d02e18b7c92cfc355f93"
+        "revision" : "e09db9aee67a2a36d0c3e3d9cc7a0d52d3e775ed"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "fee6933f37fde9a5e12a1e4aeaa93fe60116ff2a",
-        "version" : "1.2.2"
+        "revision" : "0fbc8848e389af3bb55c182bc19ca9d5dc2f255b",
+        "version" : "1.4.0"
       }
     }
   ],
