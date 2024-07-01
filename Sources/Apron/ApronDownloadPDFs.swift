@@ -9,12 +9,12 @@ struct ApronDownloadPDFs: AsyncParsableCommand {
     @Option(
         completion: .file(extensions: [ "json" ]),
         transform: file)
-    var oldRecipeIdsURL: URL
+    var oldRecipeSkusURL: URL
     
     @Option(
         completion: .file(extensions: [ "json" ]),
         transform: file)
-    var newRecipeIdsURL: URL
+    var newRecipeSkusURL: URL
     
     @Option(
         completion: .file(extensions: [ "json" ]),
@@ -27,9 +27,9 @@ struct ApronDownloadPDFs: AsyncParsableCommand {
     var output: URL
     
     func run() async throws {
-        let oldIDs = try Set<BlueApron.Recipe.ID>(jsonContentsOf: oldRecipeIdsURL)
-        var new = try [BlueApron.Recipe](jsonContentsOf: newRecipesURL)
-        new.removeAll { oldIDs.contains($0.id) }
+        let oldSKUs = try Set<BlueApron.Recipe.ID>(jsonContentsOf: oldRecipeSkusURL)
+        let new = try [BlueApron.Recipe](jsonContentsOf: newRecipesURL)
+            .filter { !oldSKUs.contains($0.id) }
 
         print("Today, the download is: \(new.count) recipes")
 

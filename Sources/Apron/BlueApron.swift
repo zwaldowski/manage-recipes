@@ -3,322 +3,61 @@ import HTMLAttributedString
 
 enum BlueApron {
 
-    struct Plan: Codable, Identifiable {
-
-        enum Kind: String, Codable {
-            case food
-            case wine
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case id
-            case kind = "type"
-        }
-
-        let id: UInt64
-        let kind: Kind
-
-        static let food = Plan(id: 1, kind: .food)
-
-    }
-
-    struct Subscription: Codable, Identifiable {
-
-        enum CodingKeys: String, CodingKey {
-            case id
-            case isActive = "is_active"
-            case plan
-        }
-
-        let id: UInt64
-        let isActive: Bool
-        let plan: Plan
-
-        init(id: UInt64, isActive: Bool = true, plan: BlueApron.Plan) {
-            self.id = id
-            self.isActive = isActive
-            self.plan = plan
-        }
-
-
-    }
-
-    struct User: Codable {
-        let subscriptions: [Subscription]
-    }
-
-    struct Order: Codable, Identifiable {
-
-        enum CodingKeys: String, CodingKey {
-            case id
-            case arrival = "arrival_date"
-            case recipes
-        }
-
-        let id: UInt64
-        let arrival: Date
-        let recipes: [Recipe]
-
-    }
-
     struct CookTime: Codable {
-
         enum CodingKeys: String, CodingKey {
             case min
             case max
             case average = "avg"
         }
 
-        let min: Int?
-        let max: Int?
-        let average: Int?
-
+        var min: Int?
+        var max: Int?
+        var average: Int?
     }
 
     struct CookTimes: Codable {
-        let prep: CookTime?
-        let cook: CookTime?
-        let overall: CookTime?
+        var prep: CookTime?
+        var cook: CookTime?
+        var overall: CookTime?
     }
 
-    struct Ingredient: Codable, Identifiable {
-
-        struct Name: Codable, Equatable {
-            let quantity: String
-            let unit: String
-            let descriptor: String
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case id
-            case name
-            case sortOrder = "sort_order"
-        }
-
-        let id: UInt64
-        let name: Name
-        let sortOrder: Int
-
+    struct Ingredient: Codable {
+        var unit: String?
+        var amount: String
+        var descriptor: String
+        var displayPriority: Int
     }
 
     struct Step: Codable {
-
-        let sortOrder: Int
-        let title: String
-        let textHTML: String
-        let imageURL: URL?
-
-        enum CodingKeys: String, CodingKey {
-            case sortOrder = "step_number"
-            case title = "step_title"
-            case textHTML = "step_text"
-            case imageURL = "recipe_step_image_url"
-        }
-
-    }
-
-    struct Product: Codable {
-
-        struct Producible: Codable {
-
-            enum Kind: String, Codable {
-                case wine
-            }
-
-            struct Wine: Codable, Identifiable {
-
-                struct Varietal: Codable, Identifiable {
-                    let id: UInt64
-                    let name: String
-                }
-
-                let id: UInt64
-                let varietals: [Varietal]
-
-            }
-
-            let kind: Kind
-            let wine: Wine?
-
-            enum CodingKeys: String, CodingKey {
-                case kind = "type"
-                case wine
-            }
-
-        }
-
-        let id: UInt64
-        let producible: Producible
-
+        var number: Int
+        var title: String
+        var textHTML: String
+        var imageURL: URL?
     }
 
     struct Recipe: Identifiable, Codable, CustomReflectable {
+        var sku: String
+        var fullName: String
+        var mainName: String
+        var subName: String?
+        var url: URL
+        var calories: Int?
+        var cookTimes: CookTimes
+        var primaryImage: URL?
+        var descriptionHTML: String?
+        var ingredients: [Ingredient]
+        var steps: [Step]?
+        var servings: String?
+        var createdDate: Date?
+        var lastDeliveredDate: Date?
 
-        struct Image: Codable {
-
-            enum Kind: String, Codable {
-                case newsletter = "square_newsletter_image"
-                case main = "main_dish_image"
-            }
-
-            enum Format: String, Codable {
-                case square = "main_square"
-                case squareRetina = "main_square_2x"
-                case highResolution = "hi_res"
-                case highResolutionFeature = "high_feature"
-                case feature = "splash_feature"
-                case featureRetina = "splash_feature_retina"
-            }
-
-            enum CodingKeys: String, CodingKey {
-                case kind = "type"
-                case format
-                case url
-            }
-
-            let kind: Kind
-            let format: Format
-            let url: URL
-
+        var id: String {
+            sku
         }
-
-        struct Pairing: Codable {
-
-            enum CodingKeys: String, CodingKey {
-                case description
-                case product = "paired_product"
-            }
-
-            let description: String
-            let product: Product?
-
-        }
-
-        struct LastDelivery: Codable {
-
-            enum CodingKeys: String, CodingKey {
-                case deliveredAt = "delivered_at"
-            }
-
-            let deliveredAt: Date
-
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case id
-            case title
-            case mainTitle = "main_title"
-            case subTitle = "sub_title"
-            case slug
-            case calories = "calories_per_serving"
-            case cookTimes = "times"
-            case images = "images"
-            case descriptionHTML = "description"
-            case ingredients
-            case steps = "recipe_steps"
-            case pairings = "product_pairings"
-            case servings
-            case createdAt = "created_at"
-            case lastDelivery = "last_delivery"
-        }
-
-        let id: UInt64
-        let title: String
-        let mainTitle: String
-        let subTitle: String
-        let slug: String
-        let calories: String?
-        let cookTimes: CookTimes
-        let images: [Image]
-        let descriptionHTML: String?
-        let ingredients: [Ingredient]
-        let steps: [Step]?
-        let pairings: [Pairing]?
-        let servings: String?
-        let createdAt: Date?
-        let lastDelivery: LastDelivery?
 
         var customMirror: Mirror {
-            Mirror(self, unlabeledChildren: [ title ])
+            Mirror(self, unlabeledChildren: [ fullName ])
         }
-
-    }
-
-    enum Requests {
-
-        enum Users {
-
-            static var url: URL {
-                URL(string: "https://www.blueapron.com/api/users")!
-            }
-
-        }
-
-        struct Orders {
-
-            var subscriptionID: BlueApron.Subscription.ID
-            var page: Int
-
-            init(subscriptionID: BlueApron.Subscription.ID, page: Int) {
-                self.subscriptionID = subscriptionID
-                self.page = page
-            }
-
-            var url: URL {
-                URL(string: "https://www.blueapron.com/api/subscriptions/\(subscriptionID)/orders/past?page=\(page)&per_page=50")!
-            }
-
-        }
-
-        struct RecipeDetails {
-
-            var recipeID: BlueApron.Recipe.ID
-
-            init(recipeID: BlueApron.Recipe.ID) {
-                self.recipeID = recipeID
-            }
-
-            var url: URL {
-                URL(string: "https://www.blueapron.com/api/recipes/\(recipeID)")!
-            }
-
-        }
-
-    }
-
-    enum Responses {
-
-        static let decoder: JSONDecoder = {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            return decoder
-        }()
-
-        struct Users: Codable {
-            let user: User
-        }
-
-        struct Orders: Codable {
-            let orders: [Order]
-            let meta: Meta
-
-            struct Meta: Codable {
-                let pagination: Pagination
-
-                struct Pagination: Codable {
-                    let nextPage: Int?
-
-                    enum CodingKeys: String, CodingKey {
-                        case nextPage = "next_page"
-                    }
-                }
-            }
-        }
-
-        struct RecipeDetails: Codable {
-            let recipe: Recipe
-        }
-
     }
 
 }
@@ -348,18 +87,16 @@ extension BlueApron.CookTimes: CustomStringConvertible {
 
 }
 
-extension BlueApron.Ingredient: Comparable {
+extension BlueApron.Ingredient: Comparable, CustomStringConvertible {
 
     static func < (lhs: Self, rhs: Self) -> Bool {
-        lhs.sortOrder < rhs.sortOrder
+        lhs.displayPriority < rhs.displayPriority
     }
 
-}
-
-extension BlueApron.Ingredient.Name: CustomStringConvertible {
-
     var description: String {
-        [ quantity, unit, descriptor ].lazy
+        [ amount, unit, descriptor ]
+            .lazy
+            .compactMap { $0 }
             .filter { !$0.isEmpty }
             .joined(separator: " ")
     }
@@ -369,31 +106,47 @@ extension BlueApron.Ingredient.Name: CustomStringConvertible {
 extension BlueApron.Step: Comparable {
 
     static func < (lhs: Self, rhs: Self) -> Bool {
-        lhs.sortOrder < rhs.sortOrder
+        lhs.number < rhs.number
     }
 
 }
 
-extension BlueApron.Recipe.Image.Kind: CaseIterable, Comparable {
-
-    static func < (lhs: Self, rhs: Self) -> Bool {
-        allCases.firstIndex(of: lhs)! < allCases.firstIndex(of: rhs)!
-    }
-
-}
-
-extension BlueApron.Recipe.Image.Format: CaseIterable, Comparable {
-
-    static func < (lhs: Self, rhs: Self) -> Bool {
-        allCases.firstIndex(of: lhs)! < allCases.firstIndex(of: rhs)!
-    }
-
-}
 
 extension BlueApron.Recipe: CustomDebugStringConvertible {
 
-    var url: URL {
-        return URL(string: "https://www.blueapron.com/recipes/\(slug)")!
+    init?(from lineItem: ApronQL.PastOrdersQuery.Data.PastOrders.Node.LineItem, order: ApronQL.PastOrdersQuery.Data.PastOrders.Node) {
+        guard let recipe = lineItem.variant.asRecipe else { return nil }
+        self.init(
+            sku: recipe.sku,
+            fullName: recipe.name.full,
+            mainName: recipe.name.main,
+            subName: recipe.name.sub,
+            url: recipe.url,
+            calories: recipe.nutritionInfo.accurateServingCalories,
+            cookTimes: BlueApron.CookTimes(
+                overall: BlueApron.CookTime(
+                    min: recipe.times.overall.min,
+                    max: recipe.times.overall.max,
+                    average: recipe.times.overall.average)),
+            primaryImage: recipe.images?.primary?.url,
+            descriptionHTML: recipe.description,
+            ingredients: recipe.ingredients.map { ingredient in
+                BlueApron.Ingredient(
+                    unit: ingredient.unit,
+                    amount: ingredient.amount,
+                    descriptor: ingredient.description,
+                    displayPriority: ingredient.displayPriority)
+            },
+            steps: recipe.steps.map { step in
+                BlueApron.Step(
+                    number: step.number,
+                    title: step.title,
+                    textHTML: step.text,
+                    imageURL: step.image?.url)
+            },
+            servings: recipe.nutritionInfo.displayServingsCount,
+            createdDate: order.createdDate,
+            lastDeliveredDate: order.scheduledArrivalDate)
     }
 
     var pdfURL: URL? {
@@ -406,14 +159,14 @@ extension BlueApron.Recipe: CustomDebugStringConvertible {
 
     var fileName: String {
         return [
-            title,
+            fullName,
             "(\(id))"
         ].compactMap { $0 }.joined(separator: " ")
     }
 
     var debugDescription: String {
         return [
-            title,
+            fullName,
             "",
             calories.map { " - Calories: \($0)" },
             cookTimes.overall.map { " - Cook Time: \($0)" },
@@ -422,26 +175,6 @@ extension BlueApron.Recipe: CustomDebugStringConvertible {
             "",
             url.absoluteString
         ].lazy.compactMap { $0 }.joined(separator: "\n")
-    }
-
-    var isHeatAndEat: Bool {
-        switch ingredients.count {
-        case 0:
-            guard let minOverallTime = cookTimes.overall?.min else { return false }
-            return minOverallTime == 0
-        case 1:
-            guard let maxOverallTime = cookTimes.overall?.max else { return false }
-            return maxOverallTime <= 15
-        case _:
-            return false
-        }
-    }
-}
-
-extension BlueApron.Recipe.Image: CustomDebugStringConvertible {
-
-    var debugDescription: String {
-        "\(kind.rawValue) - \(format.rawValue) (\(url.absoluteString))"
     }
 
 }

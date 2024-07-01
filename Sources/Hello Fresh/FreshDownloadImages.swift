@@ -52,12 +52,6 @@ struct FreshDownloadImages: AsyncParsableCommand {
         print("Done!")
     }
     
-    func bestImage(for recipe: BlueApron.Recipe) -> BlueApron.Recipe.Image? {
-        recipe.images.lazy
-            .filter { $0.kind == .main }
-            .max { $0.format < $1.format }
-    }
-    
     func downloadImage(for recipe: HelloFresh.Recipe, using session: URLSession) async throws {
         var remoteComponents = URLComponents()
         remoteComponents.scheme = "https"

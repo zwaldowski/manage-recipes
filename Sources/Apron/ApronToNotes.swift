@@ -5,16 +5,14 @@ import NotesArchive
 struct ApronToNotes: AsyncParsableCommand {
     
     @Option(
-        name: .customLong("old-recipe-ids-url"),
         completion: .file(extensions: [ "json" ]),
         transform: file)
-    var oldRecipeIDsURL: URL
+    var oldRecipeSkusURL: URL
     
     @Option(
-        name: .customLong("new-recipe-ids-url"),
         completion: .file(extensions: [ "json" ]),
         transform: file)
-    var newRecipeIDsURL: URL
+    var newRecipeSkusURL: URL
     
     @Option(
         name: .customLong("new-recipes-url"),
@@ -36,9 +34,9 @@ struct ApronToNotes: AsyncParsableCommand {
         let namespace = UUID(uuidString: "5C20042B-98ED-4B23-8A39-5E06A91BF440")!
         let hashtagID = UUID(uuidString: "5E89576C-D628-4BDB-9B82-63EED08D99AB")!
 
-        let oldIDs = try Set<BlueApron.Recipe.ID>(jsonContentsOf: oldRecipeIDsURL)
-        var recipes = try [BlueApron.Recipe](jsonContentsOf: newRecipesURL)
-        recipes.removeAll { oldIDs.contains($0.id) }
+        let oldSKUs = try Set<BlueApron.Recipe.ID>(jsonContentsOf: oldRecipeSkusURL)
+        let recipes = try [BlueApron.Recipe](jsonContentsOf: newRecipesURL)
+            .filter { !oldSKUs.contains($0.id) }
 
         var folder = Folder(metadata: Folder.Metadata(title: "Blue Apron \(Date.now.formatted(.shortISODate))"))
 
@@ -47,16 +45,18 @@ struct ApronToNotes: AsyncParsableCommand {
 
             let metadata = Note.Metadata(
                 identifier: UUID(hashing: recipe.fileName, inNamespace: namespace),
-                createdAt: recipe.lastDelivery?.deliveredAt ?? Date(),
-                modifiedAt: recipe.lastDelivery?.deliveredAt ?? Date(),
-                title: recipe.title,
+                createdAt: recipe.lastDeliveredDate ?? Date(),
+                modifiedAt: recipe.lastDeliveredDate ?? Date(),
+                title: recipe.fullName,
                 attachmentViewType: .thumbnail)
             var note = Note(metadata: metadata)
 
-            note.metadata.content.append(recipe.mainTitle, paragraphStyle: Note.Content.ParagraphStyle(name: .title))
+            note.metadata.content.append(recipe.mainName, paragraphStyle: Note.Content.ParagraphStyle(name: .title))
 
-            note.metadata.content.newParagraph()
-            note.metadata.content.append(recipe.subTitle, paragraphStyle: Note.Content.ParagraphStyle(name: .heading))
+            if let subName = recipe.subName {
+                note.metadata.content.newParagraph()
+                note.metadata.content.append(subName, paragraphStyle: Note.Content.ParagraphStyle(name: .heading))
+            }
 
             if let descriptionHTML = recipe.descriptionHTML?.ifNotEmpty {
                 note.metadata.content.newBlock()
@@ -97,18 +97,13 @@ struct ApronToNotes: AsyncParsableCommand {
             note.metadata.content.append("Yield: ", font: .default.bold())
             note.metadata.content.append("\(recipe.servings ?? "2") servings\n")
             note.metadata.content.append("Calories: ", font: .default.bold())
-            note.metadata.content.append("\(recipe.calories ?? "???") per serving")
-            if let wineVarietals = recipe.pairings?.flatMap({ $0.product?.producible.wine?.varietals ?? [] }).ifNotEmpty?.uniqued() {
-                note.metadata.content.append("\n")
-                note.metadata.content.append("Suggested wine pairings: ", font: .default.bold())
-                note.metadata.content.append(wineVarietals.map(\.name).joined(separator: ", "))
-            }
+            note.metadata.content.append("\(recipe.calories?.formatted() ?? "???") per serving")
 
             if let ingredients = recipe.ingredients.ifNotEmpty?.sorted() {
                 note.metadata.content.newBlock()
                 note.metadata.content.append("Ingredients\n", paragraphStyle: Note.Content.ParagraphStyle(name: .heading))
                 for ingredient in ingredients {
-                    note.metadata.content.append("\(ingredient.name)\n", paragraphStyle: Note.Content.ParagraphStyle(name: .checklist, checklistItem: Note.Content.ChecklistItem()))
+                    note.metadata.content.append("\(ingredient)\n", paragraphStyle: Note.Content.ParagraphStyle(name: .checklist, checklistItem: Note.Content.ChecklistItem()))
                 }
             }
 
@@ -138,7 +133,7 @@ struct ApronToNotes: AsyncParsableCommand {
             note.metadata.content.newBlock()
             note.metadata.content.append("Source\n", paragraphStyle: Note.Content.ParagraphStyle(name: .heading))
 
-            let source = Attachment.link(to: recipe.url, title: "\(recipe.title) | Blue Apron")
+            let source = Attachment.link(to: recipe.url, title: "\(recipe.fullName) | Blue Apron")
             note.metadata.content.append(source)
             note.attachments.append(source)
 

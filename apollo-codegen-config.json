@@ -1,0 +1,42 @@
+{
+  "schemaNamespace" : "ApronQL",
+  "input" : {
+    "operationSearchPaths" : [
+      "**/*.graphql"
+    ],
+    "schemaSearchPaths" : [
+      "**/*.graphqls"
+    ]
+  },
+  "output" : {
+    "testMocks" : {
+      "none" : {
+      }
+    },
+    "schemaTypes" : {
+      "path" : "./Sources/Apron",
+      "moduleType" : {
+        "embeddedInTarget" : {
+          "name": "manage-recipes"
+        }
+      }
+    },
+    "operations" : {
+      "inSchemaModule" : {
+      }
+    }
+  },
+  "schemaDownloadConfiguration": {
+    "downloadMethod": {
+      "introspection": {
+        "endpointURL": "https://www.blueapron.com/graphql",
+        "httpMethod": {
+          "GET": {}
+        },
+        "includeDeprecatedInputValues": false,
+        "outputFormat": "SDL"
+      }
+    },
+    "outputPath": "./graphql/schema.graphql"
+  }
+}

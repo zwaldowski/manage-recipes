@@ -1,0 +1,56 @@
+query PastOrders($filter: PastOrdersFilterInput!, $first: Int, $after: String) {
+  pastOrders(filter: $filter, first: $first, after: $after) {
+    nodes {
+      scheduledArrivalDate
+      lineItems {
+        variant {
+          ... on Recipe {
+            sku
+            url
+            name {
+              main
+              full
+              sub
+            }
+            description
+            nutritionInfo {
+              displayServingsCount
+              accurateServingCalories
+            }
+            times {
+              overall {
+                min
+                max
+                average
+              }
+            }
+            ingredients {
+              unit
+              amount
+              description
+              displayPriority
+            }
+            steps {
+              number
+              title
+              text
+              image {
+                url
+              }
+            }
+            images {
+              primary {
+                url
+              }
+            }
+          }
+        }
+      }
+      createdDate
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
