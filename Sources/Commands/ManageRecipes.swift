@@ -7,6 +7,7 @@ struct ManageRecipes: AsyncParsableCommand {
             ApronDownloadRecipes.self,
             ApronDownloadImages.self,
             ApronDownloadPDFs.self,
+            ApronRemoveDupes.self,
             ApronToMela.self,
             ApronToNotes.self,
             FreshDownloadRecipes.self,

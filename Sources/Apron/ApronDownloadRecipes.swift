@@ -8,7 +8,12 @@ struct ApronDownloadRecipes: AsyncParsableCommand {
         completion: .file(extensions: [ "json" ]),
         transform: file)
     var oldRecipeSkusURL: URL
-    
+
+    @Option(
+        completion: .file(extensions: [ "json" ]),
+        transform: file)
+    var oldRecipesURL: URL
+
     @Option(
         completion: .file(extensions: [ "json" ]),
         transform: file)
@@ -26,6 +31,7 @@ struct ApronDownloadRecipes: AsyncParsableCommand {
     var accessToken: String
 
     func run() async throws {
+        let oldRecipes = try [BlueApron.Recipe](jsonContentsOf: oldRecipesURL)
         let oldRecipeSKUs = try Set<BlueApron.Recipe.ID>(jsonContentsOf: oldRecipeSkusURL)
         
         let store = ApolloStore()
@@ -53,11 +59,14 @@ struct ApronDownloadRecipes: AsyncParsableCommand {
             }
         } while hasNextPage
 
-        let recipes = allOrders.flatMap { order -> [BlueApron.Recipe] in
-            order.lineItems.compactMap { lineItem -> BlueApron.Recipe? in
-                BlueApron.Recipe(from: lineItem, order: order)
+        let newRecipes = allOrders
+            .flatMap { order -> [BlueApron.Recipe] in
+                order.lineItems.compactMap { lineItem -> BlueApron.Recipe? in
+                    BlueApron.Recipe(from: lineItem, order: order)
+                }
             }
-        }
+            .filter { !oldRecipeSKUs.contains($0.sku) }
+        let recipes = oldRecipes + newRecipes
         let recipeSKUs = Set((oldRecipeSKUs + recipes.map(\.sku))).sorted()
         
         try recipes.writeJSONContents(to: newRecipesURL)

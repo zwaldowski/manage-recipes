@@ -159,7 +159,7 @@ extension BlueApron.Recipe: CustomDebugStringConvertible {
 
     var fileName: String {
         return [
-            fullName,
+            fullName.replacingOccurrences(of: "/", with: "-"),
             "(\(id))"
         ].compactMap { $0 }.joined(separator: " ")
     }
